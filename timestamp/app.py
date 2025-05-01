@@ -37,7 +37,7 @@ st.title("▶️ YouTube Timestamp Resource Finder")
 st.caption("Enter a YouTube URL, specify a timestamp, and get relevant resource links!")
 
 # --- Inputs ---
-col1, col2, col3 = st.columns([3, 1, 1])
+col1, col2 = st.columns([3, 1])
 
 with col1:
     youtube_url = st.text_input("YouTube Video URL:", placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ")
@@ -45,9 +45,6 @@ with col1:
 with col2:
     timestamp_input = st.number_input("Timestamp (s):", min_value=0, value=60, step=10, help="Enter the time in the video (in seconds) you want resources for.") 
 
-'''with col3:
-    num_resources_input = st.number_input("Num Resources:", min_value=1, max_value=10, value=3, step=1, help="How many resources to find?") 
-'''
 
 # --- Processing Logic ---
 video_id = None

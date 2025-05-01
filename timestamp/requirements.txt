@@ -1,0 +1,9 @@
+streamlit
+youtube-transcript-api
+rake-nltk
+nltk
+requests
+google-generativeai
+beautifulsoup4
+lxml
+pytube

@@ -45,9 +45,9 @@ with col1:
 with col2:
     timestamp_input = st.number_input("Timestamp (s):", min_value=0, value=60, step=10, help="Enter the time in the video (in seconds) you want resources for.") 
 
-with col3:
+'''with col3:
     num_resources_input = st.number_input("Num Resources:", min_value=1, max_value=10, value=3, step=1, help="How many resources to find?") 
-
+'''
 
 # --- Processing Logic ---
 video_id = None

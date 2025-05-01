@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import video_process_view
+from .views import generate_practice_questions
 
 urlpatterns = [
-    path('process/', video_process_view, name='video-process'),
+    path('process/', generate_practice_questions, name='video-process'),
 ]

@@ -1,23 +1,56 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .serializers import VideoInputSerializer
-from .utils import download_audio, transcribe_audio, extract_keywords, get_practice_questions_from_gemini
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
+from .utils import (
+    extract_video_id,
+    get_transcript,
+    extract_keywords_gemini,
+    get_practice_questions_from_gemini
+)
 
-@api_view(['POST'])
-def video_process_view(request):
-    serializer = VideoInputSerializer(data=request.data)
-    if serializer.is_valid():
-        video_url = serializer.validated_data['video_url']
-        watched_till = serializer.validated_data['watched_till']
-        
-        audio_path = download_audio(video_url)
-        transcript = transcribe_audio(audio_path, watched_till)
-        keywords = extract_keywords(transcript)
-        gemini_response = get_practice_questions_from_gemini(keywords)
 
-        return Response({
+@csrf_exempt
+@require_http_methods(["POST"])
+def generate_practice_questions(request):
+    try:
+        data = json.loads(request.body)
+        video_url = data.get("url")
+        timestamp = int(data.get("timestamp", 0))  # Timestamp in seconds
+
+        if not video_url or timestamp <= 0:
+            return JsonResponse({"error": "Invalid URL or timestamp."}, status=400)
+
+        video_id = extract_video_id(video_url)
+        if not video_id:
+            return JsonResponse({"error": "Could not extract video ID."}, status=400)
+
+        transcript_data = get_transcript(video_id)
+        if not transcript_data:
+            return JsonResponse({"error": "Transcript not found or disabled."}, status=404)
+
+        # Filter transcript segments up to the given timestamp
+        filtered_text = " ".join(
+            segment.text
+            for segment in transcript_data["transcript"]
+            if segment.start <= timestamp
+        )
+
+        if not filtered_text.strip():
+            return JsonResponse({"error": "Transcript up to given timestamp is empty."}, status=400)
+
+        keywords = extract_keywords_gemini(filtered_text, 7)
+        if not keywords:
+            return JsonResponse({"error": "Could not extract keywords."}, status=500)
+
+        questions = get_practice_questions_from_gemini(keywords)
+        print(questions)
+        return JsonResponse({
             "keywords": keywords,
-            "practice_questions": gemini_response
+            "questions": questions
         })
 
-    return Response(serializer.errors, status=400)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON."}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

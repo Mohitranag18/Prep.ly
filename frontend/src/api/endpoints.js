@@ -7,6 +7,10 @@ const NOTES_URL = `${BASE_URL}notes/`
 const AUTHENTICATED_URL = `${BASE_URL}authenticated/`
 const REGISTER_URL = `${BASE_URL}register/`
 const LOGOUT_URL = `${BASE_URL}logout/`
+const GET_PRACTICE_QUES = `${BASE_URL}process/`
+const GET_USER_VIDEOINPUTS = `${BASE_URL}my-videos/`
+
+
 
 
 
@@ -78,3 +82,21 @@ export const authenticated_user = async () => {
         return false
     }
 }
+
+export const generate_practice_questions = async (url, timestamp) => {
+    try {
+        const response = await axios.post(GET_PRACTICE_QUES, { url, timestamp }, { withCredentials: true });
+        return response.data;
+    } catch (error) {
+        return { error: error.response?.data?.error || 'Something went wrong' };
+    }
+};
+
+export const user_video_inputs = async () => {
+    try {
+        const response = await axios.get(GET_USER_VIDEOINPUTS, {}, { withCredentials: true });
+        return response.data;
+    } catch (error) {
+        return { error: error.response?.data?.error || 'Something went wrong' };
+    }
+};

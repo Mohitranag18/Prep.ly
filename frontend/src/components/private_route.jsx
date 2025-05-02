@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useAuth } from '../context/useAuth';
 import Layout from './layout';
 import { useNavigate } from 'react-router-dom';
+import Header from './header';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -22,7 +23,10 @@ const PrivateRoute = ({ children }) => {
   }
 
   if (user) {
-    return children;
+    return <div>
+      <Header/>
+      {children}
+    </div>
   }
 
   return null;

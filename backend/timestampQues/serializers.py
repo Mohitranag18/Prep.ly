@@ -6,3 +6,4 @@ class VideoInputSerializer(serializers.ModelSerializer):
         model = VideoInput
         fields = ['id', 'video_url', 'watched_till', 'created_at']
         read_only_fields = ['id', 'created_at']
+
